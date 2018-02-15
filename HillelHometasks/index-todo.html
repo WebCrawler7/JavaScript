@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>To Do List with saving to Local Storage</title>
+	<style>
+		* {
+			font-family: Arial;
+		}
+		h1, h2, h3, h4, h5, h6 {
+			text-align: center;
+			margin: 5px;
+		}
+		p {
+			margin: 5px;
+		}
+		div, input {
+			border: solid;
+			border-radius: 10px;
+			margin: 5px;
+			padding: 5px;
+			vertical-align: middle;
+			font-size: 22px;
+		}
+		
+		#wrapper {
+			float: left;
+			margin: 20px;
+		}
+		.version {
+			font-size: 7px;
+		}
+		.done {
+			text-decoration-line: line-through;
+			color: grey;
+		}
+		.unvisible {
+			visibility: hidden;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="wrapper">
+	<h2>ToDo list</h2>
+	<input type="text" name="todoIn">
+	<hr>
+	<h4>TO DO:</h4>
+	<ul id="list"></ul>
+	<p><input type="checkbox" name="hideDone">Hide done</p>
+	<p><input type="button" name="sort" value="Sort by done/undone"></p>
+	<p><input type="button" name="deleteAllDone" value="Delete all done"></p>
+	<p><input type="button" name="deleteAll" value="Delete all"></p>
+	</div>
+	<script src="2017-09-18-todo.js"></script>
+</body>
+</html>
+
+	<!-- <div id="wrapper">
+	<h2>ToDo list</h2>
+	<input type="text" name="todoIn">
+	<hr>
+	<h4>TO DO:</h4>
+	<ul id="list"></ul>
+	<p><input type="checkbox" name="hideDone">Hide done</p>
+	<p><input type="button" name="sort" value="Sort by done/undone"></p>
+	<p><input type="button" name="deleteAllDone" value="Delete all done"></p>
+	<p><input type="button" name="deleteAll" value="Delete all"></p>
+	</div> -->

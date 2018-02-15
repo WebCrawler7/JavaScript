@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>To Do List with saving to Local Storage 1 by 1</title>
+	<style>
+		* {
+			font-family: Arial;
+		}
+		h1, h2, h3, h4, h5, h6 {
+			text-align: center;
+			margin: 5px;
+		}
+		p {
+			margin: 5px;
+		}
+		div, input {
+			border: solid;
+			border-radius: 10px;
+			margin: 5px;
+			padding: 5px;
+			vertical-align: middle;
+			font-size: 22px;
+		}
+		
+		#wrapper {
+			float: left;
+			margin: 20px;
+		}
+		.version {
+			font-size: 7px;
+		}
+		.done {
+			text-decoration-line: line-through;
+			color: grey;
+		}
+		.unvisible {
+			visibility: hidden;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="wrapper">
+		<h2>ToDo list</h2>
+		<input type="text" name="todoIn">
+		<hr>
+		<h4>TO DO:</h4>
+		<ul id="list"></ul>
+		<p><label><input type="checkbox" name="hideDone">Hide done</label></p>
+		<p><input type="button" name="sort" value="Sort by done/undone"></p>
+		<p><input type="button" name="deleteAllDone" value="Delete all done"></p>
+		<p><input type="button" name="deleteAll" value="Delete all"></p>
+	</div>
+	<!-- <script src="2017-09-18-todo_LocalStorage_1by1.js"></script> -->
+	<script type="text/javascript">
+// v.0.35		Блокировка пустых вводов. С кнопкой удаления у каждого пункта. Производит действия и со скрытыми пунктами. С СОХРАНЕНИЕМ В localStorage!!! Один пункт, одна запись!
+		var   $el
+			, $todo_Out = document.querySelector("#list li")
+			, $in = document.querySelector("[name='todoIn']");
+
+		$in.addEventListener("dblclick", todo_Input);
+		document.querySelector("[name='hideDone']").addEventListener("change", todo_hideDone);
+		document.querySelector("[name='sort']").addEventListener("click", todo_sort);
+		document.querySelector("[name='deleteAllDone']").addEventListener("click", todo_deleteAllDone);
+		document.querySelector("[name='deleteAll']").addEventListener("click", todo_deleteAll);
+
+		function todo_Input() {
+			if ($in.value) {							//Идея Олега - блокировка пустых строк
+				$el = document.createElement("li");
+				$el.className = "todo";
+				$el.innerHTML = this.value;
+				$el.addEventListener("click", function() {
+					if (this.className === "todo") {
+						this.className = "done";
+					} else {
+						this.className = "todo";
+					}
+					todo_lStorageRefreshing(0);
+				});
+				var $button = document.createElement("input");
+				$button.type = "button";
+				$button.name = "delete";
+				$button.value = "x";
+				$button.addEventListener("click", todo_delete);
+				$el.appendChild($button);
+				list.appendChild($el);
+			}
+			todo_lStorageRefreshing(0);
+		}
+
+		function todo_delete() {
+			this.closest("li").remove();
+			todo_lStorageRefreshing(1);	
+		}
+
+		function todo_hideDone() {
+			$el = document.querySelectorAll("#list li");
+			for (var i = 0; i < $el.length; i++) {
+				if (this.checked) {
+					if ($el[i].className === "done") {
+						$el[i].className = "unvisible";
+					}
+				} else if ($el[i].className === "unvisible") {
+					$el[i].className = "done";
+				}
+			}
+			todo_lStorageRefreshing(0);	
+		}
+
+		function todo_sort() {
+			$el = document.querySelectorAll("#list li");
+			for (var i = 0; i < $el.length; i++) {
+				if ($el[i].className === "done" || $el[i].className === "unvisible") {
+					list.appendChild($el[i]);
+				}
+			}
+			todo_lStorageRefreshing(0);		
+		}
+
+		function todo_deleteAllDone() {
+			var counter = 0;
+			$el = document.querySelectorAll("#list li");
+			for (var i = 0; i < $el.length; i++) {
+				if ($el[i].className === "done" || $el[i].className === "unvisible") {
+					$el[i].remove();
+					counter++;							// счетчик сдвига после удаления
+				}
+			}
+			todo_lStorageRefreshing(counter);	
+		}
+
+		function todo_deleteAll() {
+			$el = document.querySelectorAll("#list li");
+			if (confirm("Are you sure to clear whole list???")) {
+				for (var i = 0; i < $el.length; i++) {
+					$el[i].remove();
+				}
+				localStorage.clear();
+			}
+		}
+
+		function todo_lStorageRefreshing(count) {
+			$el = document.querySelectorAll("#list li");
+			for (var i = 0; i < $el.length; i++) {
+				localStorage.setItem(i, $el[i].className + ">" + $el[i].textContent);
+			}
+			for (var j = i; j < i + count; j++)	{	// Garbage collector (очистка после удаления)
+				localStorage.removeItem(j);
+			}
+		}
+
+		function todo_restoreFromLocalStorage() {
+			var i = 0;
+			while (localStorage.getItem(i)) {
+				var string = localStorage.getItem(i);
+				$el = document.createElement("li");
+				$el.className = string.substring(0, string.indexOf(">"));
+				$el.textContent = string.substring(string.indexOf(">") + 1);
+				i++;
+				$el.addEventListener("click", function() {
+					if (this.className === "todo") {
+						this.className = "done";
+					} else {
+						this.className = "todo";
+					}
+				});
+				var $button = document.createElement("input");
+				$button.type = "button";
+				$button.name = "delete";
+				$button.value = "x";
+				$button.addEventListener("click", todo_delete);
+				$el.appendChild($button);
+				list.appendChild($el);
+			}
+		}
+
+		todo_restoreFromLocalStorage();
+
+		$el = document.createElement("p");		// ChangeLog
+		$el.className = "version";
+		$el.innerHTML = "v.0.35<br>Блокировка пустых вводов.<br>С кнопкой удаления у каждого пункта.<br>Производит действия и со скрытыми пунктами.<br>С СОХРАНЕНИЕМ В localStorage!!!<br>Один пункт, одна запись!";
+		wrapper.appendChild($el);
+
+		/* Todo лист с сохранением в localStorage */
+	</script>
+</body>
+</html>

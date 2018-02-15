@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		// v. 0.5 Циклы под строгим запретом. Ч/з счетчик в свойствах.
+		const lessonNumber = 25;
+
+		class Student {
+
+			constructor(name, surname, born, uspevaemost) {
+				this.name = name;
+				this.surname = surname;
+				this.born = born;
+				this.uspevaemost = uspevaemost;
+				this.poseschaemost = new Array(25);
+				this._counter = 0;				
+			}
+
+			age() {
+				return new Date().getFullYear() - this.born;
+			}
+
+			present() {
+				if (this._counter < lessonNumber) {
+					this.poseschaemost[this._counter] = 1;
+					this._counter++;
+				}
+			}
+
+			absent() {
+				if (this._counter < lessonNumber) {
+					this.poseschaemost[this._counter] = 0;
+					this._counter++;
+				}
+			}
+
+			averageMark() {
+				return this.uspevaemost.reduce((prevValue, current) => {
+					return prevValue + current;
+				}) / this.uspevaemost.length;
+			}
+
+			averageAttendance() {
+				return this.poseschaemost.reduce((prevValue, current) => {
+					return prevValue + current;
+				}) / lessonNumber;
+			}
+
+			summary() {
+				// console.log("this in summary = ", this);
+				const averageMark = this.averageMark();
+				const averageAttendance = this.averageAttendance();
+				// console.log("averageMark = ", averageMark, "\naverageAttendance = ", averageAttendance);
+				if (averageMark > 90 & averageAttendance > 0.9) {
+					console.log("Ути какой молодчинка!");
+					return "Ути какой молодчинка!";
+				} else if (averageMark < 90 & averageAttendance < 0.9) {
+					console.log("Редиска!");
+					return "Редиска!";
+				} else {
+					console.log("Норм, но можно лучше");
+					return "Норм, но можно лучше";
+				}
+			}
+
+			purify() {													// доп. фильтр данных перед анализом
+				// console.log("this in purify = ", this);
+				if (this.uspevaemost.length > lessonNumber) {			// ограничили по длине
+					this.uspevaemost.length = lessonNumber;
+				}
+				if (this.poseschaemost.length > lessonNumber) {
+					this.poseschaemost.length = lessonNumber;
+				}
+
+				this.uspevaemost.forEach((item, i, arr) => {			// ограничили по амплитуде
+					if (item > 100) {
+						arr[i] = 100;
+					} else if (item < 0) {
+						arr[i] = 0;
+					}
+				});
+
+				this.poseschaemost.forEach((item, i, arr) => {
+					if (item > 100) {
+						arr[i] = 100;
+					} else if (item < 0) {
+						arr[i] = 0;
+					}
+				});
+			}
+		}
+
+		let st1 = new Student("Petya", "Ivanov", 1993, [954321, 95, 93, 7777, 80, 97, 99, 88, 98, 3333333, 75, 100, 100, 100, 100, 100, 95, 93, 100, 80, 97, 99, 88, 98, 100, 75, 100, 100]);		// 28 значений ...
+
+		let st2 = new Student("Lena", "Petrova", 1880, [100, 95, 93, 100, 100, 97, 99, 88, 98, 100, 100, 100, 100, 100, 100, 100, 95, 93, 100, 100, 97, 99, 98, 98, 100, 99, 100, 100]);			// 28 значений ...
+
+		let st3 = new Student("Lida", "Sidorova", 1380, [70, 95, 93, 90, 80, 97, 99, 88, 98, 100, 100, 100, 60, 50, 40, 60, 95, 93, 90, 70, 97, 99, 98, 98, 100, 99, 100, 100]);
+
+		(function filling() {						// автозаполнение успеваемостью
+			for (i = 0; i < 2; i++) {
+				st1.absent();
+			}
+			for (i = 0; i < 30; i++) {
+				st1.present();
+			}
+			for (i = 0; i < 8; i++) {
+				st2.absent();
+			}
+			for (i = 0; i < 30; i++) {
+				st2.present();
+			}
+			for (i = 0; i < 12; i++) {
+				st3.absent();
+			}
+			for (i = 0; i < 30; i++) {
+				st3.present();
+			}
+		}());
+
+		st1.purify();
+		st2.purify();
+		st3.purify();
+
+		st1.summary();
+		st2.summary();
+		st3.summary();
+		// console.log(st1._counter);
+
+		class Group extends Array {
+
+			attendance (studentSurname) {
+				if (studentSurname) {
+					let sortedGroup = this.slice();
+					sortedGroup.sort((i, j) => {
+						// console.log("i.averageAttendance() = ", i.averageAttendance(), "\ni.averageAttendance() = ", j.averageAttendance());
+						return i.averageAttendance() < j.averageAttendance();
+					});
+					// console.log("this = ", this);
+					// console.log("sortedGroup = ", sortedGroup);
+					return sortedGroup.findIndex(student => student.surname === studentSurname) + 1;
+				} else {
+					return this.reduce((prev, item) => prev + item.averageAttendance(), 0) / this.length;
+				}
+			}
+
+			performance (studentSurname) {
+				if (studentSurname) {						// можно сделать проверку перебором всех фамилий или findIndex
+					let sortedGroup = this.slice();
+					sortedGroup.sort((i, j) => {
+						// console.log("i.averageMark() = ", i.averageMark(), "\ni.averageMark() = ", j.averageMark());
+						return i.averageMark() < j.averageMark();
+					});
+					// console.log("this = ", this);
+					// console.log("sortedGroup = ", sortedGroup);
+					return sortedGroup.findIndex(student => student.surname === studentSurname) + 1;	// если 0 - фамилия не найдена
+				} else {
+					return this.reduce((prev, item) => prev + item.averageMark(), 0) / this.length;
+				}
+			}
+		}
+
+		let group = new Group();
+		group.push(st1, st2, st3);
+		console.log("group.attendance = ", group.attendance());
+		console.log("group.performance = ", group.performance());
+		console.log(st1.surname, st1.averageMark(), st1.averageAttendance());
+		console.log(st2.surname, st2.averageMark(), st2.averageAttendance());
+		console.log(st3.surname, st3.averageMark(), st3.averageAttendance());
+		console.log("group.performance(Ivanov) = ", group.performance("Ivanov"));
+		console.log("group.performance(Petrova) = ", group.performance("Petrova"));
+		console.log("group.performance(Sidorova) = ", group.performance("Sidorova"));
+		console.log("group.attendance(Ivanov) = ", group.attendance("Ivanov"));
+		console.log("group.attendance(Petrova) = ", group.attendance("Petrova"));
+		console.log("group.attendance(Sidorova) = ", group.attendance("Sidorova"));
+
+		// задание на прототипы 2
+
+		// Создать конструктор массива, который будет содержать объекты из прошлого задания на прототипы.
+		// Массивы созданные с помощью этого конструктора должны содержать следующие методы:
+		// .attendance — если вызывается без аргумента, то возвращает среднюю посещаемость группы за одно занятие; если с аргументом — строкой содержащей фамилию одного из студентов, то возвращает его место в рейтинге посещаемости
+		// .performance — то же самое, но с оценками
+	</script>
+</body>
+</html>

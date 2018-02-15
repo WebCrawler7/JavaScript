@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<!-- заполнить целыми числами, начиная с 0 двумерный массив по спирали от периферии к центру -->
+	<script type="text/javascript">
+		var m = 6, n = 4;
+		var arr = [];
+		var counter = 0;
+		var m_counter_top = m - 1, n_counter_top = n - 1;
+
+		for (var i = 0; i < n; i++) {	// заполняем
+			arr[i] = [];
+		}
+		function fill(m_c_t, n_c_t, m_c_b, n_c_b) {
+			for (var i = m_c_b; i <= m_c_t; i++) {	// заполняем верхнюю строчку
+				arr[n_c_b][i] = counter;
+				counter++;
+			}
+			if (counter === m * n) {
+				return;
+			}
+
+			n_c_b++;
+			for (var i = n_c_b; i <= n_c_t; i++) {	// заполняем правый столбец
+				arr[i][m_c_t] = counter;
+				counter++;
+			}
+			if (counter === m * n) {
+				return;
+			}
+
+			m_c_t--;
+			for (var i = m_c_t; i >= m_c_b; i--) {	// заполняем нижнюю строчку
+				arr[n_c_t][i] = counter;
+				counter++;
+			}
+			if (counter === m * n) {
+				return;
+			}
+
+			n_c_t--;
+			console.log("n_c_t = ", n_c_t, "n_c_b = ", n_c_b, "m_c_b = ", m_c_b);
+			for (var i = n_c_t; i >= n_c_b; i--) {	// заполняем левый столбец
+				arr[i][m_c_b] = counter;
+				counter++;
+			}
+		
+			if (counter === m * n) {
+				return;
+			} else {
+				m_c_b++;
+				fill(m_c_t, n_c_t, m_c_b, n_c_b);
+			}
+		}
+
+		fill(m_counter_top, n_counter_top, 0, 0);
+		console.log(arr);
+	</script>
+</body>
+</html>

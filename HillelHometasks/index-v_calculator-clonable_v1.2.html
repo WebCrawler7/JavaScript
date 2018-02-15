@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		* {
+			font-family: Arial;
+		}
+		h2 {
+			margin-left: 20px;
+		}
+		div, input, select {
+			border: solid;
+			border-radius: 10px;
+			margin: 10px;
+			padding: 10px;
+			vertical-align: middle;
+			font-size: 22px;
+		}
+		.calc_wrapper {
+			width: 280px;
+			margin: 20px;
+		}
+		.calc_output {
+			height: 26px;
+		}
+	</style>
+</head>
+<body>
+	<h2>Валютный калькулятор 1</h2>
+	<div class="calc_wrapper">
+		<input type="text" name="lost">
+		<div class="calc_output"></div>
+		<select class="calc_direction">
+			<option>Доллары --> Гривны</option>
+			<option>Гривны --> Доллары</option>
+		</select>
+		<select class="calc_sale_purchase">
+			<option>Продать</option>
+			<option>Купить</option>
+		</select>
+	</div>
+	<div>Lorem ipsum.....Тра та та......</div>
+	<h2>Валютный калькулятор 2</h2>
+	<div class="calc_wrapper">
+		<input type="text" name="lost">
+		<div class="calc_output"></div>
+		<select class="calc_direction">
+			<option>Доллары --> Гривны</option>
+			<option>Гривны --> Доллары</option>
+		</select>
+		<select class="calc_sale_purchase">
+			<option>Продать</option>
+			<option>Купить</option>
+		</select>
+	</div>
+	<!-- <script src="2017-09-14-v_calculator-clonable_v1.1.js"></script> -->
+	<script type="text/javascript">
+		var   ratePurchase1 = 25
+			, rateSale1 = 26
+			, ratePurchase2 = 26
+			, rateSale2 = 27
+			, calc_input
+			, calc_output
+			, eInput = document.querySelectorAll(".calc_wrapper input");
+
+		for (var i = 0; i < eInput.length; i++) {
+			eInput[i].addEventListener("keyup", calc);
+			document.querySelectorAll(".calc_direction, .calc_sale_purchase")[i].addEventListener("change", calc);			
+		}
+
+		function calc(event) {
+			calc_input = this.parentNode.children[0].value;
+			if (this.parentNode.children[2].value === "Доллары --> Гривны") {
+				if (this.parentNode.children[3].value === "Продать") {
+					calc_output = calc_input * ratePurchase1;
+				} else {
+					calc_output = calc_input * ratePurchase2;
+				}
+			} else if (this.parentNode.children[3].value === "Продать") {
+				calc_output = calc_input / ratePurchase1;
+			} else {
+				calc_output = calc_input / ratePurchase2;
+			}
+			this.parentNode.children[1].innerText = calc_output;
+		};
+/* 
+Валютный калькулятор
+Сдеалать input куда вводится сумма, и при нажатии на кнопу "посчитать" выводится результат
+* выбирается радио баттоном покупаем или продаем,
+** сделать с помощью select выбор валюты
+*/
+	</script>
+</body>
+</html>
